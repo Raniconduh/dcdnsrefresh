@@ -1,0 +1,10 @@
+anyio==4.14.1
+cachetools==7.1.4
+certifi==2026.6.17
+click==8.4.2
+h11==0.16.0
+httpcore==1.0.9
+httpx==0.28.1
+idna==3.18
+starlette==1.3.1
+uvicorn==0.49.0
