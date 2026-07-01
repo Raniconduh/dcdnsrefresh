@@ -1,10 +1,10 @@
-# dcdnsrefresh
+# dcdnrefresh
 
 Refresh Discord CDN URLs automatically.
 
 ## Usage
 
-dcdnsrefresh starts an HTTP server on port 8100. It takes a Discord CDN URL at
+dcdnrefresh starts an HTTP server on port 8100. It takes a Discord CDN URL at
 path `/cdn/{url}` where `url` is of one of the following forms:
 
 * `https://cdn.discordapp.com/...`
