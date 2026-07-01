@@ -26,7 +26,7 @@ if not TOKEN:
     quit(1)
 
 API = "https://discord.com/api/v10/attachments/refresh-urls"
-REPO = "https://github.com/Raniconduh/dcdnrefresh"
+REPO = "https://github.com/Raniconduh/dcdnsrefresh"
 VERSION = "1.0.0"
 
 @dataclass
