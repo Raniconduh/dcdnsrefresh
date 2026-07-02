@@ -38,7 +38,7 @@ class RefreshedURL:
     ex: int = None
 
 cache = TLRUCache(
-    maxsize=2,
+    maxsize=1024,
     ttu=lambda k, v, now: v.ex,
     timer=time.time
 )
