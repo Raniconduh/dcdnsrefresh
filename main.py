@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import httpx
 import logging
@@ -29,6 +30,8 @@ API = "https://discord.com/api/v10/attachments/refresh-urls"
 REPO = "https://github.com/Raniconduh/dcdnrefresh"
 VERSION = "1.0.0"
 
+PATH_RE = re.compile(r'attachments/\d+/\d+/[^/]+')
+
 @dataclass
 class RefreshedURL:
     val: str = None
@@ -41,6 +44,12 @@ cache = TLRUCache(
 )
 
 logger = logging.getLogger("uvicorn.error")
+
+def remove_prefixes(s, prefixes):
+    for prefix in prefixes:
+        if s.startswith(prefix):
+            return s.removeprefix(prefix)
+    return s
 
 def parse_url(refreshed):
     parsed = urllib.parse.urlparse(refreshed)
@@ -97,13 +106,32 @@ async def query(app, cdn_url):
 async def route(request):
     # canonicalize path
     path = request.path_params["path"]
-    path = path.removeprefix("https://")
-    path = path.removeprefix("https%3A//")
+    if not path:
+        return PlainTextResponse(
+            content=HTTPStatus.BAD_REQUEST.name,
+            status_code=HTTPStatus.BAD_REQUEST.value
+        )
+
+    path = remove_prefixes(path, [
+        "https://",
+        "https%3A//",
+        "https%3a//",
+        "https:/",
+        "https%3A/",
+        "https%3a/",
+    ])
     path = path.removeprefix("cdn.discordapp.com")
-    path = path.removeprefix("/")
+    path = '/'.join([p for p in path.split('/') if p]) # strip slashes
+
     q_pos = path.find("?")
     if q_pos >= 0:
         path = path[:q_pos]
+
+    if not PATH_RE.fullmatch(path):
+        return PlainTextResponse(
+            content=HTTPStatus.BAD_REQUEST.name,
+            status_code=HTTPStatus.BAD_REQUEST.value
+        )
 
     cdn_url = f'https://cdn.discordapp.com/{path}'
     status, redirect = await query(request.app, cdn_url)
